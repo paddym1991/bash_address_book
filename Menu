@@ -1,0 +1,64 @@
+#!/bin/bash
+#Filename: Menu
+#presents user with a menu that contains a list of
+#controls for them to choose from.
+#List includes adding customer, removing customer, searching for customer, 
+#emailing customer and exiting menu.
+#When an option is chosen this will call its script to the screen.
+#Author: Patrick Murphy
+#Date: 27.04.17
+
+clear
+#Main menu is called to screen
+printf "Welcome to the Customer Details\n"
+printf "1. Add a new Customer\n"
+printf "2. Remove an existing Customer\n"
+printf "3. Search for a Customer\n"
+printf "4. E-mail a Customer\n"
+printf "5. Exit\n\n"
+
+#user asked to choose from the options above
+read -p "Enter a number: " menuoption
+
+#will loop until a valid option is entered
+until [ $menuoption -ge 1 ] && [ $menuoption -le 5 ];
+do
+echo "Invalid number entered"
+read -p "Enter a number: " menuoption
+done
+
+# read the menuoption and call the corresponding case below
+case $menuoption in
+
+#clear the screen and call the method to add a new customer
+1)
+	clear
+	./addCust 
+	;;
+
+#clear the screen and call the method to remove a customer
+2)
+	clear
+	./remCust
+	;;
+
+#clear the screen and call the method to search for a customer
+3)
+	clear
+	./findCust
+	;;
+
+#clear the screen and call the method to e-mail a customer
+4)
+	clear
+	./Email
+	;;
+
+#exit out from Menu and application
+5)
+	clear
+	exit
+	;;
+
+esac
+

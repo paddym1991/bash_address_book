@@ -1,0 +1,129 @@
+#!/bin/bash
+#Filename: remCust
+#This file allows users to remove customers from the addressbook.
+#The user is asked to search for the customer they wish to delete.
+#Search results are printed out and user is asked wheter to delete or not.
+#Customer will then either be deleted from file or not.
+#User is then asked if they wish to delete anybody else.
+#If yes, then script will loop back to top and begin process again.
+#If not then user will be brought back out to Main Menu.
+#Author: Patrick Murphy
+#Date: 27.04.17
+
+#Remove a customer
+
+clear
+
+anotherDelete=""
+
+while true; do
+
+
+		printf "============================================================================================\n"
+		printf "You can search for a customer to delete by entering their details from one of the following 2 fields:\n"
+		printf "1. Name\n"
+		printf "2. Alias\n"
+		printf "============================================================================================\n"
+		echo
+		
+		#customer searched for by name or alias
+		printf "Enter Customer you would like to delete (Name or Alias)\n"
+		printf "Or enter (e) to return to menu\n"
+		printf "==> " 
+		read delSearch
+		
+		#when customer is found, customerNotFound will increase by 1
+		#customerNotFound=`grep -c CustomerDetails`
+		customerNotFound=`wc -l CustomerDetails`
+		custSearch=`grep -i -c $delSearch CustomerDetails`
+		#if no customer is found a message wll display
+		#if customer is found their details will print to screen
+		if [[ ${customerNotFound} == 0 ]]
+		then 
+			printf "\n"
+			echo "There are no customers on file."
+			echo "Returning to Menu"	
+			sleep 2
+			break
+		elif [[ ${customerNotFound} > 0 && ${custSearch} == 0 ]]
+		then
+			printf "Search not found!\n" 
+			sleep 1
+			clear
+			continue
+		elif [[ "$delSearch" == "e" ]]
+		then
+			printf "Returning to Menu!"
+			break
+		else
+			clear
+			echo "Records found:"
+			printf "\n"
+			awk -v delSearch="$delSearch" 'BEGIN {FS="\t"} toupper($2)==toupper(delSearch) || toupper($3)==toupper(delSearch)' CustomerDetails | awk '{print NR ": " $0}'
+			printf "\n"
+		fi
+	
+	#option to delete customer or not.
+	read -p "Would you like to delete a customer listed above (y/n): " delete
+	echo
+	
+	#script will loop until valid input
+	until [ "$delete" == "y" ] || [ "$delete" == "n" ];
+	do
+        	printf "\n"
+		echo "Invalid option entered."
+		printf "\n"
+		read -p "Would you like to delete a customer listed above (y/n): " delete 	
+		echo
+	done
+	#depending on choice customer will either be removed from file or not 
+	if [ "$delete" = "n" ]
+	then
+		printf "No customer has been deleted.\n"
+		echo
+	else
+		#awk -v delSearch="$delSearch" 'BEGIN {FS="\t"} toupper($2)==toupper(delSearch) || toupper($3)==toupper(delSearch) $2 == delSearch || $3 == delSearch' CustomerDetails > tempCustomerDetailsFile
+		#mv tempCustomerDetailsFile CustomerDetails
+
+		read -p "Please enter alias (as above) of customer you want to delete: " aliasDelete
+		
+		#Correct code to delete customer.
+		#I have left in the past attempts that had failed (commented out)
+		#customer details of all customers not selected for deletion are sent to
+		#tempCustomerDetails file and that file then replaces the original CustomerDetails
+		grep -v "$aliasDelete" CustomerDetails > tempCustomerDetails; mv tempCustomerDetails CustomerDetails
+
+		#sed -e "$aliasDelete" CustomerDetails
+
+		#awk -v aliasDelete="$aliasDelete" 'NR!#/^(aliasDelete)$/' CustomerDetails > tempCustomerDetails && mv tempCustomerDetails CustomerDetails
+
+		#awk -v delSearch="$delSearch" 'BEGIN {FS="\t"} toupper($2)!=toupper(delSearch) || toupper($3)!=toupper(delSearch) {print $0}' CustomerDetails > tempCustomerDetails &&
+#mv tempCustomerDetails CustomerDetails
+
+		#mv $CustomerDetails tempCustomerDetailsFile
+		printf "Customer(s) deleted!\n"
+	fi
+	
+	#user given option to delete another customer or not
+
+		read -p "would you like to search for any other customer(s) to delete? (y/n) : " anotherDelete
+	echo
+	if [[ "$anotherDelete" == "n" ]]
+	then
+		break
+	elif [[ "$anotherDelete" == "y" ]]
+	then
+		continue
+	else
+		printf "Invalid option entered"	
+		
+	fi
+
+
+done
+clear
+printf "Returning to Menu"
+sleep 2
+./Menu
+
+

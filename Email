@@ -1,0 +1,142 @@
+#!/bin/bash
+#Filename: Email
+#This script allows user to email customers on file by means of a switch menu
+#User has the option to email an individual customer or all customers at once
+#To email a single customer the user will be asked to search for that customers and their email
+#User will enter the subject, message and customer email and then asked to confirm email.
+#When user chooses to email all; All customers' emails will be added to the one email.
+
+clear
+#print out email menu to show user email options available for them
+#to choose from.
+#Each numbered option can be activated with 'case'.
+printf "Welcome to the Email Section\n"
+printf "Please choose one of the following options\n"
+printf "\n"
+printf "1. Email an individual\n"
+printf "2. Email all\n"
+printf "3. Exit back to Menu\n"
+
+#enter number corresponding to users choice
+read -p "Enter a number: " emailoption
+
+#until the the option entered 
+until [ $emailoption -ge 1 ] || [ $emailoption -le 3 ];
+do
+echo "Invalid option entered"
+read -p "Enter a number: " emailoption
+done
+
+case $emailoption in
+
+1)
+	#user is asked to search for customer they wish to email
+	clear
+	read -p "Enter (Name) of customer you wish to email: " emailSearch
+
+		customerNotFound=`grep -i -c $emailSearch CustomerDetails`
+
+		if [ $customerNotFound -eq 0 ]
+		then 
+			printf "\n"
+			echo "There are no customers on file."
+			#echo "Returning to Menu"	
+			#sleep 2.5
+			#./Menu
+		else
+			clear
+			printf "\n"
+			echo "Records found:"
+			printf "\n"
+			awk -v emailSearch="$emailSearch" 'BEGIN {FS="\t"} toupper($2)==toupper(emailSearch)' CustomerDetails | awk '{print $2 " Email: "$1}'
+			printf "\n"
+		fi
+
+		#user then asked to confirm email address they wish to send email to
+		read -p "Please enter the email address you wish to send an email to:" emailAddress
+		
+		#user asked to write email
+		read -p "Please enter the subject of the email:" emailSubject
+		read -p "Please enter the message of the email:" emailMessage
+		printf "__________________________________________\n"
+		printf "Would you like to send the following email:\n\n"
+		echo "Subject: $emailSubject"
+		echo
+		echo "Message: $emailMessage"
+		echo
+		printf "Recipient: $emailAddress"
+		echo
+		echo
+		read -p "(y/n): " confirm
+		
+		#confirmation of email
+		until [ "$confirm" == "y" ] || [ "$confirm" == "n" ];
+		do
+        	printf "\n"
+		echo "Invalid option entered."
+		printf "\n"
+		read -p "confirm email (y/n): " confirm 	
+		done	
+
+		if [ "$confirm" == "y" ]
+		then
+			echo $emailMessage | mail -s $emailSubject $emailAddress
+			printf "Email sent!"
+		elif [ "$confirm" == "n" ]
+		then
+			echo "Email has been discarded!"
+		fi
+		sleep 2
+		./Email
+		;;
+
+2)
+	clear
+		#customer is asked to ented subject and message. Recipients are already selected
+		emailAddress=`grep -i "	" CustomerDetails | awk '{print $1}'`
+		read -p "Please enter the subject of the email:" emailSubject
+		read -p "Please enter the message of the email:" emailMessage
+		printf "__________________________________________\n"
+		printf "Would you like to send the following email:\n\n"
+		echo "Subject: $emailSubject"
+		echo
+		echo "Message: $emailMessage"
+		echo
+		printf "Recipient(s):\n\n$emailAddress"
+		echo
+		echo
+		echo
+		read -p "(y/n): " confirm
+		
+		#user asked to confirm email to be sent (some validation also)
+		until [ "$confirm" == "y" ] || [ "$confirm" == "n" ];
+		do
+        	printf "\n"
+		echo "Invalid option entered."
+		printf "\n"
+		read -p "confirm email (y/n): " confirm 	
+		done	
+
+		if [ "$confirm" == "y" ]
+		then
+			
+			echo $emailMessage | mail -s $emailSubject $emailAddress
+			printf "Email sent!"
+			sleep 2
+
+		elif [ "$confirm" == "n" ]
+		then
+			echo "Email has been discarded!"
+		fi
+		sleep 2
+		./Email
+		;;
+
+
+3)	
+	#Exit to menu
+	./Menu
+	
+esac
+
+

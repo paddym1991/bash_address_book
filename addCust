@@ -1,0 +1,76 @@
+#!/bin/bash
+#Filename: addCust
+# Allows the user to add a customer to the file CustomerDetails
+#User will add customers by entering their email, name, alias, address, phone number.
+#These entries will be copied into CustomerDetails file 
+#Author: Patrick Murphy
+#Date: 27.04.17
+
+clear
+
+printf "Please enter the following customer details: \n"
+
+#customer email address is entered into file here
+printf "\nEnter Email Address (xx@xx.xx) : "
+read email
+	until [[ "$email" == ?*@?*.?* ]];
+	do
+	echo
+	echo "Invalid Email Address Entered."
+	echo
+	echo "Please Enter Valid Email Address (xx@xx.xx): "
+	read email
+done
+
+#customer name is declared here
+printf "Enter Name: "
+read name
+until [[ "$name" =~ ^[A-Za-z]+$ ]];
+do
+	echo "Invalid Name Entered."
+	echo
+	echo "Please Enter Valid Name: "
+	read name
+done
+
+#customer alias is declared here
+printf "Enter Alias: "
+read alias
+until [[ "$alias" =~ ^[A-Za-z]+$ ]];
+do
+	echo "Invalid Alias Entered."
+	echo
+	echo "Please Enter Valid Alias: "
+	read alias
+done
+
+#customer address is delared here
+printf "Enter Address: "
+read address
+until [[ "$address" =~ ^[0-9A-Za-z]+$ ]];
+do
+	echo "Invalid Address Entered."
+	echo
+	echo "Please Enter Valid Address: "
+	read address
+done
+
+#customer phone number is declared here
+printf "Enter Phone Number: "
+read phone
+until [[ "$phone" =~ ^[0-9]+$ ]]; 
+do
+	echo "Invalid Phone Number Entered."
+	echo
+	echo "Please Enter Valid Phone Number: "
+	read phone
+done
+
+printf "\nCustomer Successfully Added"
+printf "\nPlease Wait"
+sleep 2
+
+#customer details are copied into file CustomerDetails
+printf "$email	$name	$alias	$address	$phone\n" >> CustomerDetails
+
+./Menu

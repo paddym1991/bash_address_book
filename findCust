@@ -1,0 +1,40 @@
+#!/bin/bash
+#Filename: remCust
+#Allows user to search for customers stored
+#User can search by any criteria they wish
+#matching customers will be returned to screen
+#user will be asked if they want to search again
+#if they do, script will loop back to beginning
+#if not, returns to main menu
+
+#Search for a customer
+
+clear
+
+#Search will loop until user enters "n" when asked to search again
+until [ "$anotherSearch" = "n" ];
+do
+
+	#following screen will print out to let the user know what they can search by
+	printf "You can search for a customer by entering any of the following:\n"
+	printf "1. Their email\n"
+	printf "2. Their name\n"
+	printf "3. Their alias\n"
+	printf "4. Their address\n"
+	printf "5. Their phone number\n"
+
+	#user enters value to screen 
+	printf "\n"
+	read -p "Please enter search details: " search
+
+	clear
+	printf "Results found:\n"
+	printf "\n"
+	grep -i -n $search CustomerDetails
+	printf "\n"
+	read -p "Would you like to make another search? (y/n) : " anotherSearch
+	clear
+done
+
+./Menu
+
